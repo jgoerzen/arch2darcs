@@ -7,6 +7,5 @@ Copyright: Copyright (c) 2005 John Goerzen
 Extensions: ExistentialQuantification, AllowOverlappingInstances,
     AllowUndecidableInstances, CPP
 -- CPP extension is really only needed in FiniteMap.hs
-Build-Depends: haskell-src, network, unix, parsec
+Build-Depends: haskell-src, network, unix, parsec, MissingH (>= 0.9.0)
 GHC-Options: -O2
-
