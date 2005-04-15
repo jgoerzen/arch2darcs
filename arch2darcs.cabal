@@ -1,0 +1,12 @@
+Name: arch2darcs
+Version: 0.10.1
+License: GPL
+Maintainer: John Goerzen <jgoerzen@complete.org>
+Stability: Alpha
+Copyright: Copyright (c) 2005 John Goerzen
+Extensions: ExistentialQuantification, AllowOverlappingInstances,
+    AllowUndecidableInstances, CPP
+-- CPP extension is really only needed in FiniteMap.hs
+Build-Depends: haskell-src, network, unix, parsec
+GHC-Options: -O2
+
