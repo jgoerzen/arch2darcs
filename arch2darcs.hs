@@ -48,8 +48,7 @@ getDarcsDir =
 
 initLogging =
     sequence_ $ map (\x -> updateGlobalLogger x (setLevel DEBUG))
-              ["arch2darcs", "main", "MissingH.Cmd.pOpen3",
-               "MissingH.Cmd.safeSystem"]
+              ["arch2darcs", "main"] --, "MissingH.Cmd.pOpen3", "MissingH.Cmd.safeSystem"]
 
 info = infoM "main"
 
@@ -94,6 +93,7 @@ handleReplay lines =
         procline ('=', fn) = darcsRename (split "\t" fn)
         procline ('-', _)  = return ()
         procline ('*', _)  = return ()
+        procline ('c', _)  = return ()
         procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
         procline (x, fn)   = warningM "main" $ "Unknown replay code " ++ [x] ++
                                " for " ++ fn
