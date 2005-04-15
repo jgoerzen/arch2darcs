@@ -28,13 +28,16 @@ import System.IO
 import Text.Regex
 import MissingH.Str
 
-usage = "Usage: arch2darcs\n" ++
+usage = "Usage: arch2darcs [-i]\n" ++
  "\n" ++
  "You must be in your darcs working copy before running this command.\n" ++
  "\n" ++
  "Will apply any Arch patches, to the darcs repository in the current\n"++
  "working directory, that are not\n" ++
- "already in the current working directory.\n"
+ "already in the current working directory.\n" ++
+ "\n" ++
+ "If you give -i, initialize the darcs repo using what is present in the\n" ++
+ "directory currently."
 
 getDarcsDir = 
     do isdarcswc <- doesDirectoryExist "_darcs"
@@ -44,20 +47,29 @@ getDarcsDir =
 
 initLogging =
     sequence_ $ map (\x -> updateGlobalLogger x (setLevel DEBUG))
-              ["arch2darcs", "MissingH.Cmd", "MissingH.Cmd.safeSystem",
-               "MissingH.Cmd.pOpen3", "MissingH.Cmd.pOpen",
+              ["arch2darcs", 
+               --"MissingH.Cmd", "MissingH.Cmd.safeSystem",
+               --"MissingH.Cmd.pOpen3", "MissingH.Cmd.pOpen",
                "main"]
 
 info = infoM "main"
 
 getLines cmd args func = 
     let f h = do c <- hGetLines h
-                 func c
+                 seq c (func c)
         in pOpen ReadFromPipe cmd args f
+
+initializeDarcs =
+    do args <- getArgs
+       case args of
+          ["-i"] -> do info "Processing existing Arch situation..."
+                       getLines "tla" ["logs", "-f"] (recordLog ["-l"] . last)
+          _ -> return ()
 
 main = do
        initLogging
        darcsdir <- getDarcsDir
+       initializeDarcs
        info "Looking for new patches..."
        getLines "tla" ["missing", "-f"] (mapM_ procPatch)
        info "Done."
@@ -65,8 +77,10 @@ main = do
 procPatch patchname =
     do info $ "Processing " ++ patchname
        getLines "tla" ["replay", patchname] handleReplay
-       getLines "tla" ["cat-log", patchname] (record patchname)
-       
+       recordLog [] patchname
+
+recordLog extraargs patchname = 
+    getLines "tla" ["cat-log", patchname] (record extraargs patchname)
 
 handleReplay lines =
     let splitline line =
@@ -77,6 +91,7 @@ handleReplay lines =
         procline ('M', _)  = return ()
         procline ('D', _)  = return ()
         procline ('-', _)  = return ()
+        procline ('*', _)  = return ()
         procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
         procline (x, fn)   = warningM "main" $ "Unknown replay code " ++ [x] ++
                                " for " ++ fn
@@ -85,12 +100,12 @@ handleReplay lines =
             (not $ contains ".arch-ids/" fn)
         in mapM_ procline . filter noArchMeta . map splitline $ lines
         
-record patchname loglines = 
+record extraargs patchname loglines = 
     let (date, creator, summary, log) = parseLog loglines
         pipestr = date ++ "\n" ++ creator ++ "\n" ++ 
                     summary ++ "\n" ++ log ++ "\n" ++
                     "(" ++ patchname ++ ")\n"
-        in pOpen WriteToPipe "darcs" ["record", "-a", "--pipe"]
+        in pOpen WriteToPipe "darcs" (["record", "-a", "--pipe"] ++ extraargs)
              (\h -> hPutStr h pipestr)
 
 parseLog loglines =
