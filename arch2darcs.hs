@@ -47,10 +47,7 @@ getDarcsDir =
 
 initLogging =
     sequence_ $ map (\x -> updateGlobalLogger x (setLevel DEBUG))
-              ["arch2darcs", 
-               --"MissingH.Cmd", "MissingH.Cmd.safeSystem",
-               --"MissingH.Cmd.pOpen3", "MissingH.Cmd.pOpen",
-               "main"]
+              ["arch2darcs", "main"]
 
 info = infoM "main"
 
@@ -64,7 +61,9 @@ initializeDarcs =
        case args of
           ["-i"] -> do info "Processing existing Arch situation..."
                        getLines "tla" ["logs", "-f"] (recordLog " -l" . last)
-          _ -> return ()
+          [] -> return ()
+          _ -> do putStr usage
+                  fail "Invalid command-line syntax"
 
 main = do
        initLogging
@@ -111,7 +110,6 @@ record extraargs patchname loglines =
                ["-c", "darcs record -a --pipe" ++ extraargs ++ " > /dev/null"]
                (\h -> hPutStr h pipestr)
               
-
 parseLog loglines =
     let findline hdrname [] = error $ "Couldn't find " ++ hdrname
         findline hdrname (x:xs) =
