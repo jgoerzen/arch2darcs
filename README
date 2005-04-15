@@ -1,0 +1,92 @@
+Welcome to arch2darcs, a program for converting Arch repositories to
+Darcs.
+
+FEATURES
+--------
+
+arch2darcs is used to convert an Arch repository to Darcs,
+automaticaly preserving:
+
+ * All original logs
+ * Modification dates
+ * All adds, deletes, and renames that were versioned with tla
+ * Files in Arch.
+
+arch2darcs can process entire Arch/tla branches at once.
+
+PREREQUISITES
+-------------
+
+To build arch2darcs, you need:
+
+ * GHC 6.2 or above
+   http://www.haskell.org/ghc/
+   (if you built darcs from source, you have this already)
+
+ * Cabal (only needed if you aren't using GHC 6.4 or above)
+   http://www.haskell.org/cabal/
+   
+ * MissingH 0.9.0 or above (0.10.0 or above highly recommended)
+   http://quux.org/devel/missingh
+
+BUILDING
+--------
+
+Type "make".  The binary will be in dist/build.  You can install it
+with ./setup install.
+
+CONVERTING ENTIRE ARCH BRANCH
+-----------------------------
+
+To convert an entire Arch branch, the overall procedure is:
+
+ 1. Check out base-0 from that branch
+ 2. Initialize the working directory for darcs
+ 3. Run arch2darcs -i
+
+Example:
+
+$ tla get jgoerzen@complete.org--projects/missingh--head--0.5--base-0 missingh
+
+  *** IMPORTANT NOTE: make sure you include "--base-0" from the above
+      command.
+
+$ cd missingh
+$ darcs initialize
+$ arch2darcs -i
+Processing existing Arch situation...
+Looking for new patches...
+Processing jgoerzen@complete.org--projects/missingh--head--0.5--patch-1
+...
+Processing jgoerzen@complete.org--projects/missingh--head--0.5--patch-145
+Done.
+
+CONVERTING BRANCH TAGS
+----------------------
+
+With Arch, when one branches, one "tags" the source to the
+destination.  It's common practice to cease development on one branch
+and then begin on the next in the Arch world.  You can use arch2darcs
+to do this.  Start by importing the oldest branch as shown above.
+Then follow this example, which shows moving from an 0.5 to an 0.7
+branch and then following history there:
+
+( assuming you're still in missingh/ from earlier )
+$ tla sync-tree jgoerzen@complete.org--projects/missingh--head--0.7--base-0
+
+  *** ONCE AGAIN, notice the presence of base-0!
+$ tla set-tree-version jgoerzen@complete.org--projects/missingh--head--0.7
+$ arch2darcs -i
+Processing existing Arch situation...
+Looking for new patches...
+Processing jgoerzen@complete.org--projects/missingh--head--0.7--patch-1
+...
+
+UPDATING EXISTING CONVERSION
+----------------------------
+
+Maybe you want to make a Darcs mirror of an Arch repository.  Once you
+have the Darcs version converted as described above, you can simply
+run arch2darcs periodically (without the -i).  It will convert and
+apply all new patches in the Arch repository to Darcs.  Nifty, eh?
+
