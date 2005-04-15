@@ -47,7 +47,8 @@ getDarcsDir =
 
 initLogging =
     sequence_ $ map (\x -> updateGlobalLogger x (setLevel DEBUG))
-              ["arch2darcs", "main"]
+              ["arch2darcs", "main", "MissingH.Cmd.pOpen3",
+               "MissingH.Cmd.safeSystem"]
 
 info = infoM "main"
 
@@ -89,8 +90,7 @@ handleReplay lines =
         procline ('A', fn) = safeSystem "darcs" ["add", fn]
         procline ('M', _)  = return ()
         procline ('D', fn) = safeSystem "darcs" ["remove", fn]
-        procline ('=', fn) = safeSystem "darcs" $ ["mv"] ++
-                              (split "\t" fn)
+        procline ('=', fn) = safeSystem "darcs" $ ["mv"] ++ (split "\t" fn)
         procline ('-', _)  = return ()
         procline ('*', _)  = return ()
         procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
@@ -98,9 +98,9 @@ handleReplay lines =
                                " for " ++ fn
         noArchMeta (_, fn) =
             (not $ startswith "{arch}/" fn) && 
-            (not $ contains ".arch-ids/" fn)
+            (not $ contains ".arch-ids" fn)
         in mapM_ procline . filter noArchMeta . map splitline $ lines
-        
+
 record extraargs patchname loglines = 
     let (date, creator, summary, log) = parseLog loglines
         pipestr = date ++ "\n" ++ creator ++ "\n" ++ 
