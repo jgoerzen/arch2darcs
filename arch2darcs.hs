@@ -27,6 +27,7 @@ import Text.ParserCombinators.Parsec
 import System.IO
 import Text.Regex
 import MissingH.Str
+import System.Posix.Files
 
 usage = "Usage: arch2darcs [-i]\n" ++
  "\n" ++
@@ -90,7 +91,7 @@ handleReplay lines =
         procline ('A', fn) = safeSystem "darcs" ["add", fn]
         procline ('M', _)  = return ()
         procline ('D', fn) = safeSystem "darcs" ["remove", fn]
-        procline ('=', fn) = safeSystem "darcs" $ ["mv"] ++ (split "\t" fn)
+        procline ('=', fn) = darcsRename (split "\t" fn)
         procline ('-', _)  = return ()
         procline ('*', _)  = return ()
         procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
@@ -100,6 +101,21 @@ handleReplay lines =
             (not $ startswith "{arch}/" fn) && 
             (not $ contains ".arch-ids" fn)
         in mapM_ procline . filter noArchMeta . map splitline $ lines
+
+darcsRename [src, dest] = 
+    let tmpname = ",,arch2darcs-tmp-rename"
+        darcsmv = safeSystem "darcs" $ ["mv", src, dest]
+        in do f <- fileExist src
+              if f 
+                 -- If the source file exists, darcs mv gives an error because
+                 -- the dest file is already there.  Temporarily hide the
+                 -- source file from darcs mv so there's no error, then move it
+                 -- back.
+                 then do rename src tmpname
+                         darcsmv
+                         rename tmpname src
+                 else darcsmv
+darcsRename x = fail $ "Bad rename line in replay: " ++ show x
 
 record extraargs patchname loglines = 
     let (date, creator, summary, log) = parseLog loglines
