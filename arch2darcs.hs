@@ -89,8 +89,9 @@ handleReplay lines =
                 in (cmdtype, fn)
         procline ('A', fn) = safeSystem "darcs" ["add", fn]
         procline ('M', _)  = return ()
-        procline ('D', fn) = safeSystem "darcs" ["remove", fn]
+        procline ('D', fn) = return ()
         procline ('=', fn) = darcsRename (split "\t" fn)
+        procline ('/', fn) = darcsRename (split "\t" fn)
         procline ('-', _)  = return ()
         procline ('*', _)  = return ()
         procline ('c', _)  = return ()
