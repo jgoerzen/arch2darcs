@@ -14,6 +14,12 @@ automaticaly preserving:
 
 arch2darcs can process entire Arch/tla branches at once.
 
+I wrote arch2darcs because tla2darcs:
+
+ * Didn't handle renames properly
+ * Lacked good support for importing a whole branch at once
+ * Seemed crash-prone
+
 PREREQUISITES
 -------------
 
