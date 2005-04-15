@@ -25,6 +25,8 @@ import MissingH.Cmd
 import MissingH.List
 import Text.ParserCombinators.Parsec
 import System.IO
+import Text.Regex
+import MissingH.Str
 
 usage = "Usage: arch2darcs\n" ++
  "\n" ++
@@ -100,4 +102,5 @@ parseLog loglines =
         (date, _) = findline "Standard-date" loglines
         (creator, _) = findline "Creator" loglines
         (summary, log) = findline "Summary" loglines
-        in (date, creator, summary, unlines log)
+        darcsdate = subRe (mkRegex "[^0-9]") date ""
+        in (darcsdate, creator, summary, unlines log)
