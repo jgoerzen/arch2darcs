@@ -63,7 +63,7 @@ initializeDarcs =
     do args <- getArgs
        case args of
           ["-i"] -> do info "Processing existing Arch situation..."
-                       getLines "tla" ["logs", "-f"] (recordLog ["-l"] . last)
+                       getLines "tla" ["logs", "-f"] (recordLog " -l" . last)
           _ -> return ()
 
 main = do
@@ -77,7 +77,7 @@ main = do
 procPatch patchname =
     do info $ "Processing " ++ patchname
        getLines "tla" ["replay", patchname] handleReplay
-       recordLog [] patchname
+       recordLog "" patchname
 
 recordLog extraargs patchname = 
     getLines "tla" ["cat-log", patchname] (record extraargs patchname)
@@ -105,8 +105,10 @@ record extraargs patchname loglines =
         pipestr = date ++ "\n" ++ creator ++ "\n" ++ 
                     summary ++ "\n" ++ log ++ "\n" ++
                     "(" ++ patchname ++ ")\n"
-        in pOpen WriteToPipe "darcs" (["record", "-a", "--pipe"] ++ extraargs)
-             (\h -> hPutStr h pipestr)
+        in pOpen WriteToPipe "sh"
+               ["-c", "darcs record -a --pipe" ++ extraargs ++ " > /dev/null"]
+               (\h -> hPutStr h pipestr)
+              
 
 parseLog loglines =
     let findline hdrname [] = error $ "Couldn't find " ++ hdrname
