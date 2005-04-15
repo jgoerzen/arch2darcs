@@ -22,7 +22,9 @@ import System.Directory
 import MissingH.Logging.Logger
 import MissingH.IO
 import MissingH.Cmd
+import MissingH.List
 import Text.ParserCombinators.Parsec
+import System.IO
 
 usage = "Usage: arch2darcs\n" ++
  "\n" ++
@@ -59,7 +61,7 @@ main = do
        info "Done."
 
 procPatch patchname =
-    do info $ "Processing " patchname
+    do info $ "Processing " ++ patchname
        getLines "tla" ["replay", patchname] handleReplay
        getLines "tla" ["cat-log", patchname] (record patchname)
        
@@ -74,15 +76,28 @@ handleReplay lines =
         procline ('D', _)  = return ()
         procline ('-', _)  = return ()
         procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
-        procline (x, fn)   = warnM "main" $ "Unknown replay code " ++ [x] ++
+        procline (x, fn)   = warningM "main" $ "Unknown replay code " ++ [x] ++
                                " for " ++ fn
         noArchMeta (_, fn) =
-            (not $ startswith "{arch}/") && (not $ contains ".arch-ids/")
+            (not $ startswith "{arch}/" fn) && 
+            (not $ contains ".arch-ids/" fn)
         in mapM_ procline . filter noArchMeta . map splitline $ lines
         
-record patchname logstr = 
-    do let (date, summary, log) = parseLog logstr
+record patchname loglines = 
+    let (date, creator, summary, log) = parseLog loglines
+        pipestr = date ++ "\n" ++ creator ++ "\n" ++ 
+                    summary ++ "\n" ++ log ++ "\n" ++
+                    "(" ++ patchname ++ ")\n"
+        in pOpen WriteToPipe "darcs" ["record", "-a", "--pipe"]
+             (\h -> hPutStr h pipestr)
 
-parseLog [] = []
-parseLog ("
-    let 
+parseLog loglines =
+    let findline hdrname [] = error $ "Couldn't find " ++ hdrname
+        findline hdrname (x:xs) =
+            if startswith (hdrname ++ ": ") x
+               then (drop (2 + length hdrname) x, xs)
+               else findline hdrname xs
+        (date, _) = findline "Standard-date" loglines
+        (creator, _) = findline "Creator" loglines
+        (summary, log) = findline "Summary" loglines
+        in (date, creator, summary, unlines log)
