@@ -89,4 +89,3 @@ Maybe you want to make a Darcs mirror of an Arch repository.  Once you
 have the Darcs version converted as described above, you can simply
 run arch2darcs periodically (without the -i).  It will convert and
 apply all new patches in the Arch repository to Darcs.  Nifty, eh?
-

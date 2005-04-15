@@ -104,7 +104,7 @@ handleReplay lines =
 
 darcsRename [src, dest] = 
     let tmpname = ",,arch2darcs-tmp-rename"
-        darcsmv = safeSystem "darcs" $ ["mv", src, dest]
+        darcsmv = safeSystem "darcs" $ ["mv", "--case-ok", src, dest]
         in do f <- fileExist src
               if f 
                  -- If the source file exists, darcs mv gives an error because
