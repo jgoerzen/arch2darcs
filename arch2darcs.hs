@@ -89,7 +89,9 @@ handleReplay lines =
                 in (cmdtype, fn)
         procline ('A', fn) = safeSystem "darcs" ["add", fn]
         procline ('M', _)  = return ()
-        procline ('D', _)  = return ()
+        procline ('D', fn) = safeSystem "darcs" ["remove", fn]
+        procline ('=', fn) = safeSystem "darcs" $ ["mv"] ++
+                              (split "\t" fn)
         procline ('-', _)  = return ()
         procline ('*', _)  = return ()
         procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
