@@ -22,6 +22,7 @@ import System.Directory
 import MissingH.Logging.Logger
 import MissingH.IO
 import MissingH.Cmd
+import Text.ParserCombinators.Parsec
 
 usage = "Usage: arch2darcs\n" ++
  "\n" ++
@@ -55,6 +56,33 @@ main = do
        darcsdir <- getDarcsDir
        info "Looking for new patches..."
        getLines "tla" ["missing", "-f"] (mapM_ procPatch)
+       info "Done."
 
 procPatch patchname =
-    do putStrLn $ "Got patch " ++ patchname
+    do info $ "Processing " patchname
+       getLines "tla" ["replay", patchname] handleReplay
+       getLines "tla" ["cat-log", patchname] (record patchname)
+       
+
+handleReplay lines =
+    let splitline line =
+            let cmdtype = head line
+                fn = drop 4 line
+                in (cmdtype, fn)
+        procline ('A', fn) = safeSystem "darcs" ["add", fn]
+        procline ('M', _)  = return ()
+        procline ('D', _)  = return ()
+        procline ('-', _)  = return ()
+        procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
+        procline (x, fn)   = warnM "main" $ "Unknown replay code " ++ [x] ++
+                               " for " ++ fn
+        noArchMeta (_, fn) =
+            (not $ startswith "{arch}/") && (not $ contains ".arch-ids/")
+        in mapM_ procline . filter noArchMeta . map splitline $ lines
+        
+record patchname logstr = 
+    do let (date, summary, log) = parseLog logstr
+
+parseLog [] = []
+parseLog ("
+    let 
