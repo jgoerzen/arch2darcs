@@ -106,7 +106,7 @@ handleReplay lines =
 darcsRename [src, dest] = 
     let tmpname = ",,arch2darcs-tmp-rename"
         darcsmv = safeSystem "darcs" $ ["mv", "--case-ok", src, dest]
-        in if src == dest
+        in if src == dest || src == "./" ++ dest || "./" ++ src == dest
               then return ()
               else do f <- fileExist src
                       if f 
