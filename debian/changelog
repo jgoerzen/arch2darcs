@@ -1,3 +1,9 @@
+arch2darcs (1.0.1) unstable; urgency=low
+
+  * Ignore renames where src and dest are equal.
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 16 Apr 2005 00:00:13 -0500
+
 arch2darcs (1.0.0) unstable; urgency=low
 
   * Initial Release.  Closes: #304863.
