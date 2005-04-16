@@ -95,3 +95,11 @@ Maybe you want to make a Darcs mirror of an Arch repository.  Once you
 have the Darcs version converted as described above, you can simply
 run arch2darcs periodically (without the -i).  It will convert and
 apply all new patches in the Arch repository to Darcs.  Nifty, eh?
+
+LATEST VERSION AND AUTHOR
+-------------------------
+
+arch2darcs is written by John Goerzen, jgoerzen at complete dot org.
+You can get the latest version with:
+
+darcs get --partial http://darcs.complete.org/arch2darcs
