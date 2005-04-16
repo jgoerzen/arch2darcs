@@ -1,12 +1,23 @@
 Source: arch2darcs
-Section: unknown
+Section: devel
 Priority: optional
 Maintainer: John Goerzen <jgoerzen@complete.org>
-Build-Depends: debhelper (>= 4.0.0)
+Build-Depends: debhelper (>= 4.0.0), ghc6 (>= 6.2.1), libghc6-cabal-dev (>= 0.5), libghc6-missingh-dev (>= 0.9.0)
 Standards-Version: 3.6.1
 
 Package: arch2darcs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: <insert up to 60 chars description>
- <insert long description, indented with spaces>
+Depends: ${shlibs:Depends}, ${misc:Depends}, darcs (>= 1.0.2), tla (>= 1.3)
+Description: Convert Arch/tla repositories to Darcs
+ arch2darcs is used to convert an Arch repository to Darcs,
+ automaticaly preserving:
+ .
+  * All original logs
+ .
+  * Modification dates
+ .
+  * All adds, deletes, and renames that were versioned with tla
+ .
+  * Files in Arch.
+ .
+ arch2darcs can process entire Arch/tla branches at once.

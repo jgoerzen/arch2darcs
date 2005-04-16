@@ -25,3 +25,6 @@ hugsbuild: setup
 setup: Setup.lhs arch2darcs.cabal
 	ghc -package Cabal Setup.lhs -o setup
 
+clean:
+	-./setup clean
+	-rm -rf dist *.ho *.hi *.o *.a setup *~

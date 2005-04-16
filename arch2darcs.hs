@@ -87,7 +87,7 @@ handleReplay lines =
             let cmdtype = head line
                 fn = drop 4 line
                 in (cmdtype, fn)
-        procline ('A', fn) = safeSystem "darcs" ["add", fn]
+        procline ('A', fn) = safeSystem "darcs" ["add", "--case-ok", fn]
         procline ('M', _)  = return ()
         procline ('D', fn) = return ()
         procline ('=', fn) = darcsRename (split "\t" fn)
