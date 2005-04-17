@@ -40,12 +40,6 @@ usage = "Usage: arch2darcs [-i]\n" ++
  "If you give -i, initialize the darcs repo using what is present in the\n" ++
  "directory currently."
 
-getDarcsDir = 
-    do isdarcswc <- doesDirectoryExist "_darcs"
-       if isdarcswc
-          then getCurrentDirectory
-          else fail "CWD is not a Darcs directory"
-
 initLogging =
     sequence_ $ map (\x -> updateGlobalLogger x (setLevel DEBUG))
               ["arch2darcs", "main"] --, "MissingH.Cmd.pOpen3", "MissingH.Cmd.safeSystem"]
@@ -68,7 +62,6 @@ initializeDarcs =
 
 main = do
        initLogging
-       darcsdir <- getDarcsDir
        initializeDarcs
        info "Looking for new patches..."
        getLines "tla" ["missing", "-f"] (mapM_ procPatch)

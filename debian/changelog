@@ -1,3 +1,10 @@
+arch2darcs (1.0.2) unstable; urgency=low
+
+  * No longer bother to check current directory for darcs ourselves;
+    is more flexible in non-conventional situations.
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 16 Apr 2005 21:54:30 -0500
+
 arch2darcs (1.0.1) unstable; urgency=low
 
   * Ignore renames where src and dest are equal.
