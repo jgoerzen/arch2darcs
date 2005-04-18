@@ -98,7 +98,10 @@ handleReplay lines =
         procline ('A', fn) = safeSystem "darcs" ["add", "--case-ok", fn]
         procline ('=', fn) = darcsRename (split "\t" fn)
         procline ('/', fn) = darcsRename (split "\t" fn)
-        procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
+        procline ('C', fn)
+            | isSuffixOf "{arch}/=tagging-method" fn = 
+                warningM "main" $ "Ignoring conflict on =tagging-method"
+            | otherwise = fail $ "Conflict on replay in " ++ fn
         procline (x, fn)
             | x `elem` "MD-*c" = return () -- Ignore these chars
             | otherwise = warningM "main" $ "Unknown replay code " ++ [x] ++
