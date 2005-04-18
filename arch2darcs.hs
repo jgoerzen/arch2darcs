@@ -28,21 +28,28 @@ import System.IO
 import Text.Regex
 import MissingH.Str
 import System.Posix.Files
+import MissingH.GetOpt
+import System.Console.GetOpt
+import Control.Monad
+import Data.List
 
-usage = "Usage: arch2darcs [-i]\n" ++
- "\n" ++
- "You must be in your darcs working copy before running this command.\n" ++
- "\n" ++
- "Will apply any Arch patches, to the darcs repository in the current\n"++
- "working directory, that are not\n" ++
- "already in the current working directory.\n" ++
- "\n" ++
- "If you give -i, initialize the darcs repo using what is present in the\n" ++
- "directory currently."
+options =
+    [ Option "i" [] (NoArg ("i", ""))  "Process most recent patch in directory before proceeding (initialize mode)",
+      Option "v" [] (NoArg ("v", ""))  "Verbose mode",
+      Option "S" ["--stop-after"] (ReqArg (stdRequired "S") "PATCH")  "Stop processing after encountering the given patch; ie, patch--32"
+    ]
+validate (_, []) = Nothing
+validate (_, _)  = Just "Unrecognized options appended"
 
-initLogging =
+header = unlines $ 
+  ["You must be in your darcs working copy before running this command.",
+   "",
+   "Will apply any Arch patches to the darcs repository in the current",
+   "working directory that are not already present in the CWD."]
+
+initLogging isVerbose =
     sequence_ $ map (\x -> updateGlobalLogger x (setLevel DEBUG))
-              ["arch2darcs", "main"] --, "MissingH.Cmd.pOpen3", "MissingH.Cmd.safeSystem"]
+              (["arch2darcs", "main"] ++ (if isVerbose then ["MissingH.Cmd.pOpen3", "MissingH.Cmd.safeSystem", "MissingH.Cmd.pOpen"] else []))
 
 info = infoM "main"
 
@@ -52,20 +59,26 @@ getLines cmd args func =
         in pOpen ReadFromPipe cmd args f
 
 initializeDarcs =
-    do args <- getArgs
-       case args of
-          ["-i"] -> do info "Processing existing Arch situation..."
-                       getLines "tla" ["logs", "-f"] (recordLog " -l" . last)
-          [] -> return ()
-          _ -> do putStr usage
-                  fail "Invalid command-line syntax"
+    do info "Processing existing Arch situation..."
+       getLines "tla" ["logs", "-f"] (recordLog " -l" . last)
 
 main = do
-       initLogging
-       initializeDarcs
+       (args, _) <- validateCmdLine RequireOrder options header validate
+       initLogging (hasKeyAL "v" args)
+       when (hasKeyAL "i" args) initializeDarcs
        info "Looking for new patches..."
-       getLines "tla" ["missing", "-f"] (mapM_ procPatch)
+       getLines "tla" ["missing", "-f"] (handlePatches (lookup "S" args))
        info "Done."
+
+handlePatches :: Maybe String -> [String] -> IO ()
+handlePatches _ [] = return ()
+handlePatches Nothing (x:xs) = do procPatch x
+                                  handlePatches Nothing xs
+handlePatches (Just stop) (x:xs) =
+    do procPatch x
+       if isSuffixOf stop x
+          then return ()
+          else handlePatches (Just stop) xs
 
 procPatch patchname =
     do info $ "Processing " ++ patchname
