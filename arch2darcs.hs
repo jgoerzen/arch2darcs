@@ -34,15 +34,17 @@ import Control.Monad
 import Data.List
 
 options =
-    [ Option "i" [] (NoArg ("i", ""))  "Process most recent patch in directory before proceeding (initialize mode)",
+    [ Option "i" [] (NoArg ("i", ""))  "Process last existing patch first",
       Option "v" [] (NoArg ("v", ""))  "Verbose mode",
-      Option "S" ["--stop-after"] (ReqArg (stdRequired "S") "PATCH")  "Stop processing after encountering the given patch; ie, patch--32"
+      Option "S" ["stop-after"] (ReqArg (stdRequired "S") "PATCH")  "Stop processing after PATCH"
     ]
 validate (_, []) = Nothing
 validate (_, _)  = Just "Unrecognized options appended"
 
 header = unlines $ 
-  ["You must be in your darcs working copy before running this command.",
+  ["Usage: arch2darcs [options]",
+   "",
+   "You must be in your darcs working copy before running this command.",
    "",
    "Will apply any Arch patches to the darcs repository in the current",
    "working directory that are not already present in the CWD."]
