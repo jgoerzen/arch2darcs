@@ -32,7 +32,6 @@ import MissingH.GetOpt
 import System.Console.GetOpt
 import Control.Monad
 import Data.List
-import MissingH.Path
 import Control.Exception
 
 options =
@@ -89,16 +88,15 @@ handlePatches (Just stop) (x:xs) =
           else handlePatches (Just stop) xs
 
 procPatch patchname =
-    let doreplay tmpdir =
-            do let tmpdarcs = tmpdir ++ "/_darcs"
-               renameLog "_darcs" tmpdarcs
-               actions <- finally (getLines "tla" ["replay", patchname]
-                                            handleReplay)
-                                  (renameLog tmpdarcs "_darcs")
-               sequence_ actions
-    in do info $ "Processing " ++ patchname
-          brackettmpdir "arch2darcs-XXXXXX" doreplay
-          recordLog "" patchname
+    do info $ "Processing " ++ patchname
+        -- Rename the dir to something uninteresting to both
+        -- darcs and arch
+       renameLog "_darcs" "_darcs.bak"
+       actions <- finally (getLines "tla" ["replay", patchname]
+                                       handleReplay)
+                          (renameLog "_darcs.bak" "_darcs")
+       sequence_ actions
+       recordLog "" patchname
 
 recordLog extraargs patchname = 
     getLines "tla" ["cat-log", patchname] (record extraargs patchname)

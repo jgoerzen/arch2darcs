@@ -48,8 +48,8 @@ To convert an entire Arch branch, the overall procedure is:
 
  1. Check out base-0 from that branch
  2. Initialize the working directory for darcs
- 3. Add _darcs to {arch}/=tagging-method backup line
- 4. Run arch2darcs -i
+ 3. Run arch2darcs -i
+ 4. Delete temporary files
 
 Example:
 
@@ -60,10 +60,6 @@ $ tla get jgoerzen@complete.org--projects/missingh--head--0.5--base-0 missingh
 
 $ cd missingh
 $ darcs initialize
-$ vim {arch}/=tagging-method
-  Change the exclude line to (one example):
-  backup ^.*(~|\.~[0-9]+~|\.bak|\.orig|\.rej|\.original|\.swp|\.modified|\.reject|_darcs)$
-
 $ arch2darcs -i
 Processing existing Arch situation...
 Looking for new patches...
@@ -71,6 +67,8 @@ Processing jgoerzen@complete.org--projects/missingh--head--0.5--patch-1
 ...
 Processing jgoerzen@complete.org--projects/missingh--head--0.5--patch-145
 Done.
+$ rm -rf \{arch\}
+$ find . -name .arch-ids -exec rm -rf {} \;
 
 CONVERTING BRANCH TAGS
 ----------------------
@@ -100,18 +98,6 @@ Maybe you want to make a Darcs mirror of an Arch repository.  Once you
 have the Darcs version converted as described above, you can simply
 run arch2darcs periodically (without the -i).  It will convert and
 apply all new patches in the Arch repository to Darcs.  Nifty, eh?
-
-TROUBLESHOOTING / FAQ
----------------------
-
- * I'm getting conflicts from tla during the replay.  What's going on?
-
-   You probably need to adjust the backup rule in
-   {arch}/=tagging-methods.
-
-   Or, perhaps you've done this and there's a conflict due to a change
-   to =tagging-methods itself.  Just merge the change manually, then
-   run arch2darcs -i to start up where you left off.
 
 LATEST VERSION AND AUTHOR
 -------------------------
