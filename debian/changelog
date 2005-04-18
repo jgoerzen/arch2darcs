@@ -1,3 +1,11 @@
+arch2darcs (1.0.3) unstable; urgency=low
+
+  * No longer requires tagging-method workaround.
+  * New command-line options: -v, -S
+  * Various minor bugfixes.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 18 Apr 2005 04:11:00 -0500
+
 arch2darcs (1.0.2) unstable; urgency=low
 
   * No longer bother to check current directory for darcs ourselves;
