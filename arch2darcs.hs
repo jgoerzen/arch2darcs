@@ -53,13 +53,17 @@ header = unlines $
 
 initLogging isVerbose =
     sequence_ $ map (\x -> updateGlobalLogger x (setLevel DEBUG))
-              (["arch2darcs", "main"] ++ (if isVerbose then ["MissingH.Cmd.pOpen3", "MissingH.Cmd.safeSystem", "MissingH.Cmd.pOpen"] else []))
+              (["arch2darcs", "main"] ++ (if isVerbose then ["MissingH.Cmd.safeSystem", "MissingH.Cmd.pOpen", "renameLog"] else []))
 
 info = infoM "main"
 
+renameLog src dest = do debugM "renameLog" $ "Renaming " ++ src ++ " -> " ++ 
+                               dest
+                        rename src dest
+
 getLines cmd args func = 
     let f h = do c <- hGetLines h
-                 seq c (func c)
+                 seq (seqList c) (func c)
         in pOpen ReadFromPipe cmd args f
 
 initializeDarcs =
@@ -87,10 +91,10 @@ handlePatches (Just stop) (x:xs) =
 procPatch patchname =
     let doreplay tmpdir =
             do let tmpdarcs = tmpdir ++ "/_darcs"
-               rename "_darcs" tmpdarcs
+               renameLog "_darcs" tmpdarcs
                actions <- finally (getLines "tla" ["replay", patchname]
                                             handleReplay)
-                                  (rename tmpdarcs "_darcs")
+                                  (renameLog tmpdarcs "_darcs")
                sequence_ actions
     in do info $ "Processing " ++ patchname
           brackettmpdir "arch2darcs-XXXXXX" doreplay
