@@ -81,16 +81,13 @@ handleReplay lines =
                 fn = drop 4 line
                 in (cmdtype, fn)
         procline ('A', fn) = safeSystem "darcs" ["add", "--case-ok", fn]
-        procline ('M', _)  = return ()
-        procline ('D', fn) = return ()
         procline ('=', fn) = darcsRename (split "\t" fn)
         procline ('/', fn) = darcsRename (split "\t" fn)
-        procline ('-', _)  = return ()
-        procline ('*', _)  = return ()
-        procline ('c', _)  = return ()
         procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
-        procline (x, fn)   = warningM "main" $ "Unknown replay code " ++ [x] ++
-                               " for " ++ fn
+        procline (x, fn)
+            | x `elem` "MD-*c" = return () -- Ignore these chars
+            | otherwise = warningM "main" $ "Unknown replay code " ++ [x] ++
+                            " for " ++ fn
         noArchMeta (_, fn) =
             (not $ startswith "{arch}/" fn) && 
             (not $ contains ".arch-ids" fn)
