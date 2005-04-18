@@ -32,6 +32,8 @@ import MissingH.GetOpt
 import System.Console.GetOpt
 import Control.Monad
 import Data.List
+import MissingH.Path
+import Control.Exception
 
 options =
     [ Option "i" [] (NoArg ("i", ""))  "Process last existing patch first",
@@ -83,9 +85,16 @@ handlePatches (Just stop) (x:xs) =
           else handlePatches (Just stop) xs
 
 procPatch patchname =
-    do info $ "Processing " ++ patchname
-       getLines "tla" ["replay", patchname] handleReplay
-       recordLog "" patchname
+    let doreplay tmpdir =
+            do let tmpdarcs = tmpdir ++ "/_darcs"
+               rename "_darcs" tmpdarcs
+               actions <- finally (getLines "tla" ["replay", patchname]
+                                            handleReplay)
+                                  (rename tmpdarcs "_darcs")
+               sequence_ actions
+    in do info $ "Processing " ++ patchname
+          brackettmpdir "arch2darcs-XXXXXX" doreplay
+          recordLog "" patchname
 
 recordLog extraargs patchname = 
     getLines "tla" ["cat-log", patchname] (record extraargs patchname)
@@ -98,10 +107,7 @@ handleReplay lines =
         procline ('A', fn) = safeSystem "darcs" ["add", "--case-ok", fn]
         procline ('=', fn) = darcsRename (split "\t" fn)
         procline ('/', fn) = darcsRename (split "\t" fn)
-        procline ('C', fn)
-            | isSuffixOf "{arch}/=tagging-method" fn = 
-                warningM "main" $ "Ignoring conflict on =tagging-method"
-            | otherwise = fail $ "Conflict on replay in " ++ fn
+        procline ('C', fn) = fail $ "Conflict on replay in " ++ fn
         procline (x, fn)
             | x `elem` "MD-*c" = return () -- Ignore these chars
             | otherwise = warningM "main" $ "Unknown replay code " ++ [x] ++
@@ -109,7 +115,7 @@ handleReplay lines =
         noArchMeta (_, fn) =
             (not $ startswith "{arch}/" fn) && 
             (not $ contains ".arch-ids" fn)
-        in mapM_ procline . filter noArchMeta . map splitline $ lines
+        in return . map procline . filter noArchMeta . map splitline $ lines
 
 darcsRename [src, dest] = 
     let tmpname = ",,arch2darcs-tmp-rename"
