@@ -2,7 +2,7 @@ Source: arch2darcs
 Section: devel
 Priority: optional
 Maintainer: John Goerzen <jgoerzen@complete.org>
-Build-Depends: debhelper (>= 4.0.0), ghc6 (>= 6.2.1), libghc6-cabal-dev (>= 0.5), libghc6-missingh-dev (>= 0.9.0)
+Build-Depends: debhelper (>= 4.0.0), ghc6 (>= 6.2.1), libghc6-cabal-dev (>= 0.5), libghc6-missingh-dev (>= 0.10.6)
 Standards-Version: 3.6.1
 
 Package: arch2darcs
