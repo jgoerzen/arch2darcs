@@ -33,6 +33,7 @@ import System.Console.GetOpt
 import Control.Monad
 import Data.List
 import Control.Exception
+import Control.Concurrent (threadDelay)
 
 options =
     [ Option "i" [] (NoArg ("i", ""))  "Process last existing patch first",
@@ -141,7 +142,8 @@ record extraargs patchname loglines =
         pipestr = date ++ "\n" ++ creator ++ "\n" ++ 
                     summary ++ "\n" ++ log ++ "\n" ++
                     "(" ++ patchname ++ ")\n"
-        in pOpen WriteToPipe "sh"
+        in threadDelay (1000000 * 3 / 2)
+           pOpen WriteToPipe "sh"
                ["-c", "darcs record -a --pipe" ++ extraargs ++ " > /dev/null"]
                (\h -> hPutStr h pipestr)
               
