@@ -142,10 +142,10 @@ record extraargs patchname loglines =
         pipestr = date ++ "\n" ++ creator ++ "\n" ++ 
                     summary ++ "\n" ++ log ++ "\n" ++
                     "(" ++ patchname ++ ")\n"
-        in threadDelay (1000000 * 3 / 2)
-           pOpen WriteToPipe "sh"
-               ["-c", "darcs record -a --pipe" ++ extraargs ++ " > /dev/null"]
-               (\h -> hPutStr h pipestr)
+        in do threadDelay (1000000 * 3 / 2)
+              pOpen WriteToPipe "sh"
+                ["-c", "darcs record -a --pipe" ++ extraargs ++ " > /dev/null"]
+                (\h -> hPutStr h pipestr)
               
 parseLog loglines =
     let findline hdrname [] = error $ "Couldn't find " ++ hdrname
