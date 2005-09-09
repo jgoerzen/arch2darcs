@@ -142,7 +142,7 @@ record extraargs patchname loglines =
         pipestr = date ++ "\n" ++ creator ++ "\n" ++ 
                     summary ++ "\n" ++ log ++ "\n" ++
                     "(" ++ patchname ++ ")\n"
-        in do threadDelay (1000000 * 3 / 2)
+        in do threadDelay (1000000 * 3 `div` 2)
               pOpen WriteToPipe "sh"
                 ["-c", "darcs record -a --pipe" ++ extraargs ++ " > /dev/null"]
                 (\h -> hPutStr h pipestr)
