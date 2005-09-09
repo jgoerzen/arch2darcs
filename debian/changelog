@@ -1,3 +1,9 @@
+arch2darcs (1.0.4) unstable; urgency=low
+
+  * Rebuild against newer GHC due to gmp transition in unstable.
+
+ -- John Goerzen <jgoerzen@complete.org>  Fri,  9 Sep 2005 06:53:01 -0500
+
 arch2darcs (1.0.3) unstable; urgency=low
 
   * No longer requires tagging-method workaround.
