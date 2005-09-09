@@ -1,8 +1,15 @@
-arch2darcs (1.0.4) unstable; urgency=low
+arch2darcs (1.0.5) unstable; urgency=low
 
   * Rebuild against newer GHC due to gmp transition in unstable.
 
- -- John Goerzen <jgoerzen@complete.org>  Fri,  9 Sep 2005 06:53:01 -0500
+ -- John Goerzen <jgoerzen@complete.org>  Fri,  9 Sep 2005 06:37:33 -0500
+
+arch2darcs (1.0.4) unstable; urgency=low
+
+  * Add delay before calling darcs record.  Closes: #316375.
+  * Updated for ghc6.4 cabal.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 11 Jul 2005 05:52:27 -0500
 
 arch2darcs (1.0.3) unstable; urgency=low
 

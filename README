@@ -68,7 +68,7 @@ Processing jgoerzen@complete.org--projects/missingh--head--0.5--patch-1
 Processing jgoerzen@complete.org--projects/missingh--head--0.5--patch-145
 Done.
 $ rm -rf \{arch\}
-$ rm -r `find . -name .arch-ids`
+$ find . -name .arch-ids -exec rm -rf {} \;
 
 CONVERTING BRANCH TAGS
 ----------------------
