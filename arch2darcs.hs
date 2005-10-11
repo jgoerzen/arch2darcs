@@ -93,7 +93,7 @@ procPatch patchname =
         -- Rename the dir to something uninteresting to both
         -- darcs and arch
        renameLog "_darcs" "_darcs.bak"
-       actions <- finally (getLines "tla" ["replay", patchname]
+       actions <- finally (getLines "tla" ["replay", "--unescaped", patchname]
                                        handleReplay)
                           (renameLog "_darcs.bak" "_darcs")
        sequence_ actions
