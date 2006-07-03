@@ -4,10 +4,10 @@ License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Stability: Alpha
 Copyright: Copyright (c) 2005 John Goerzen
-Build-Depends: haskell-src, network, unix, parsec, MissingH>=0.10.6
+Build-Depends: base, network, unix, parsec, MissingH>=0.10.6
 
 Executable: arch2darcs
 Main-Is: arch2darcs.hs
 GHC-Options: -O2
-Extensions: ExistentialQuantification, AllowOverlappingInstances,
-    AllowUndecidableInstances
+Extensions: ExistentialQuantification, OverlappingInstances,
+    UndecidableInstances

@@ -1,3 +1,9 @@
+arch2darcs (1.0.7) unstable; urgency=low
+
+  * Fix to build under GHC 6.4.2, and rebuild under GHC 6.4.2.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon,  3 Jul 2006 10:30:31 -0500
+
 arch2darcs (1.0.6) unstable; urgency=low
 
   * Applied patch from Christian Thater to handle filenames with spaces.
