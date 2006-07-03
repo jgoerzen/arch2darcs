@@ -57,7 +57,7 @@ install: build
 
 	# Add here commands to install the package into debian/arch2darcs.
 	#$(MAKE) install DESTDIR=$(CURDIR)/debian/arch2darcs
-	cp dist/build/arch2darcs debian/arch2darcs/usr/bin/
+	cp dist/build/arch2darcs/arch2darcs debian/arch2darcs/usr/bin/
 
 
 # Build architecture-independent files here.
