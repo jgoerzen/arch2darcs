@@ -1,3 +1,9 @@
+arch2darcs (1.0.8) unstable; urgency=low
+
+  * Rebuilt with GHC 6.6.
+
+ -- John Goerzen <jgoerzen@complete.org>  Fri, 20 Oct 2006 10:35:03 -0500
+
 arch2darcs (1.0.7) unstable; urgency=low
 
   * Fix to build under GHC 6.4.2, and rebuild under GHC 6.4.2.
