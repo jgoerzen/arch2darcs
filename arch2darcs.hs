@@ -21,7 +21,7 @@ import System.Environment
 import System.Directory
 import System.Log.Logger
 import System.IO.Utils
-import Ststem.Cmd.Utils
+import System.Cmd.Utils
 import Data.List.Utils
 import Text.ParserCombinators.Parsec
 import System.IO
