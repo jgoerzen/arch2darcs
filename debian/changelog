@@ -1,3 +1,9 @@
+arch2darcs (1.0.9) unstable; urgency=low
+
+  * Update to build against newer MissingH.  Closes: #409685.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 22 Feb 2007 05:11:54 -0600
+
 arch2darcs (1.0.8) unstable; urgency=low
 
   * Rebuilt with GHC 6.6.

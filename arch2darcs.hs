@@ -19,16 +19,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 module Main where
 import System.Environment
 import System.Directory
-import MissingH.Logging.Logger
-import MissingH.IO
-import MissingH.Cmd
-import MissingH.List
+import System.Log.Logger
+import System.IO.Utils
+import Ststem.Cmd.Utils
+import Data.List.Utils
 import Text.ParserCombinators.Parsec
 import System.IO
 import Text.Regex
-import MissingH.Str
+import Data.String
 import System.Posix.Files
-import MissingH.GetOpt
+import System.Console.GetOpt.Utils
 import System.Console.GetOpt
 import Control.Monad
 import Data.List
@@ -156,5 +156,5 @@ parseLog loglines =
         (date, _) = findline "Standard-date" loglines
         (creator, _) = findline "Creator" loglines
         (summary, log) = findline "Summary" loglines
-        darcsdate = subRe (mkRegex "[^0-9]") date ""
+        darcsdate = subRegex (mkRegex "[^0-9]") date ""
         in (darcsdate, creator, summary, unlines log)
