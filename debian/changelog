@@ -1,3 +1,9 @@
+arch2darcs (1.0.11) testing-proposed-updates; urgency=low
+
+  * Re-upload into unstable.  Closes: #409685.
+
+ -- John Goerzen <jgoerzen@complete.org>  Fri, 13 Apr 2007 03:03:03 -0500
+
 arch2darcs (1.0.10) testing-proposed-updates; urgency=low
 
   * Re-upload to testing-proposed-updates for etch.  Closes: #414675.
