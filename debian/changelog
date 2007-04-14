@@ -1,3 +1,9 @@
+arch2darcs (1.0.12) unstable; urgency=low
+
+  * Really into unstable this time!
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 14 Apr 2007 09:23:53 -0500
+
 arch2darcs (1.0.11) testing-proposed-updates; urgency=low
 
   * Re-upload into unstable.  Closes: #409685.
