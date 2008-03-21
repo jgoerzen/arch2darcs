@@ -4,7 +4,7 @@ License: GPL
 Maintainer: John Goerzen <jgoerzen@complete.org>
 Stability: Alpha
 Copyright: Copyright (c) 2005 John Goerzen
-Build-Depends: base, network, unix, parsec, MissingH>=0.18.0, regex-compat, hslogger
+Build-Depends: base, network, unix, parsec, MissingH>=0.18.0, regex-compat, hslogger, directory
 
 Executable: arch2darcs
 Main-Is: arch2darcs.hs
